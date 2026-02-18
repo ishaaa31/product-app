@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -95,6 +96,9 @@ import { AuthService } from '../services/auth.service';
   `
 })
 export class RegisterComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  
   model = {
     fullName: '',
     email: '',
@@ -105,35 +109,20 @@ export class RegisterComponent {
   errorMessage = '';
   isLoading = false;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
-
   onSubmit() {
     this.isLoading = true;
     this.successMessage = '';
     this.errorMessage = '';
     
     this.authService.register(this.model).subscribe({
-      next: (response) => {
+      next: () => {
         this.isLoading = false;
         this.successMessage = 'Registration successful! Redirecting to login...';
-        
-        setTimeout(() => {
-          this.router.navigate(['/login']);
-        }, 2000);
+        setTimeout(() => this.router.navigate(['/login']), 2000);
       },
-      error: (error) => {
+      error: (error: HttpErrorResponse) => {
         this.isLoading = false;
-        
-        if (error.error?.errors) {
-          // Handle validation errors
-          const errors = error.error.errors;
-          this.errorMessage = Object.values(errors).flat().join(', ');
-        } else {
-          this.errorMessage = error.error?.message || 'Registration failed. Please try again.';
-        }
+        this.errorMessage = error.error?.message || 'Registration failed';
       }
     });
   }

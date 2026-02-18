@@ -1,5 +1,6 @@
+import { Injectable, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
@@ -7,14 +8,15 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5270/api/Auth'; 
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  
+  private apiUrl = 'http://localhost:5270/api/Auth';
   private tokenKey = 'auth_token';
   private userKey = 'current_user';
   
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
-
-  constructor(private http: HttpClient, private router: Router) {}
 
   register(userData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, userData);
@@ -33,8 +35,10 @@ export class AuthService {
   }
 
   logout(): void {
-    this.removeToken();
-    this.removeUser();
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(this.tokenKey);
+      localStorage.removeItem(this.userKey);
+    }
     this.isAuthenticatedSubject.next(false);
     this.router.navigate(['/login']);
   }
@@ -47,24 +51,23 @@ export class AuthService {
   }
 
   private setToken(token: string): void {
-    localStorage.setItem(this.tokenKey, token);
-  }
-
-  private removeToken(): void {
-    localStorage.removeItem(this.tokenKey);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(this.tokenKey, token);
+    }
   }
 
   private setUser(user: any): void {
-    localStorage.setItem(this.userKey, JSON.stringify(user));
-  }
-
-  private removeUser(): void {
-    localStorage.removeItem(this.userKey);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(this.userKey, JSON.stringify(user));
+    }
   }
 
   getCurrentUser(): any {
-    const user = localStorage.getItem(this.userKey);
-    return user ? JSON.parse(user) : null;
+    if (typeof window !== 'undefined') {
+      const user = localStorage.getItem(this.userKey);
+      return user ? JSON.parse(user) : null;
+    }
+    return null;
   }
 
   private hasToken(): boolean {

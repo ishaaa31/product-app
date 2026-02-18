@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -76,6 +77,10 @@ import { AuthService } from '../services/auth.service';
   `
 })
 export class LoginComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  
   model = {
     email: '',
     password: ''
@@ -84,11 +89,6 @@ export class LoginComponent {
   errorMessage = '';
   isLoading = false;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
-
   onSubmit() {
     this.isLoading = true;
     this.errorMessage = '';
@@ -96,12 +96,12 @@ export class LoginComponent {
     this.authService.login(this.model).subscribe({
       next: () => {
         this.isLoading = false;
-        this.router.navigate(['/products']);
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/products';
+        this.router.navigateByUrl(returnUrl);
       },
-      
-      error: (error) => {
+      error: (error: HttpErrorResponse) => {
         this.isLoading = false;
-        this.errorMessage = error.error?.message || 'Login failed. Please try again.';
+        this.errorMessage = error.error?.message || 'Login failed';
       }
     });
   }

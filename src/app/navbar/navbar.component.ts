@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -18,7 +18,7 @@ import { AuthService } from '../services/auth.service';
         
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
-            <li class="nav-item">
+            <li class="nav-item" *ngIf="isLoggedIn$ | async">
               <a class="nav-link" routerLink="/products" routerLinkActive="active">Products</a>
             </li>
           </ul>
@@ -52,18 +52,15 @@ import { AuthService } from '../services/auth.service';
   `
 })
 export class NavbarComponent implements OnInit {
-  isLoggedIn$;
+  private authService = inject(AuthService);
+  
+  isLoggedIn$ = this.authService.isAuthenticated$;
   currentUser: any = null;
-
-  constructor(private authService: AuthService) {
-     this.isLoggedIn$ = this.authService.isAuthenticated$;
-  }
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     
-    // Update user when auth state changes
-    this.authService.isAuthenticated$.subscribe(isLoggedIn => {
+    this.authService.isAuthenticated$.subscribe((isLoggedIn: boolean) => {
       if (isLoggedIn) {
         this.currentUser = this.authService.getCurrentUser();
       } else {
