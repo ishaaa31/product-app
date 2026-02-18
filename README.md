@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # ProductappUi
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.3.
@@ -61,4 +60,3 @@ For more information on using the Angular CLI, including detailed command refere
 =======
 # product-app
 jwt authentication
->>>>>>> 5bb25e9e4384c836e949e026618647727c0b4bca
