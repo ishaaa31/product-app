@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ProductappUi
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.3.
@@ -57,3 +58,7 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+=======
+# product-app
+jwt authentication
+>>>>>>> 5bb25e9e4384c836e949e026618647727c0b4bca
