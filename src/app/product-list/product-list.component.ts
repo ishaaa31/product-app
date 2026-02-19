@@ -43,7 +43,7 @@ import { HttpErrorResponse } from '@angular/common/http';
           <tr *ngFor="let product of products">
             <td>{{ product.productId }}</td>
             <td>{{ product.productName }}</td>
-            <td>{{ product.productPrice | currency }}</td>
+            <td>{{ product.productPrice | currency:'INR':'symbol':'1.0-0' }}</td>
             <td>{{ product.productCategory }}</td>
             <td>
               <span class="badge" [class.bg-success]="product.hasDetails" [class.bg-secondary]="!product.hasDetails">
