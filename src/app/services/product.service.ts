@@ -30,7 +30,4 @@ export class ProductService {
     return this.http.delete(`${this.baseUrl}/DeleteProduct/${id}`, { responseType: 'text' });
   }
 
-  getProductDetails(productId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/GetProductDetails/${productId}`);
-  }
 }

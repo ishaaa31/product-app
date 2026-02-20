@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
@@ -8,7 +8,7 @@ import { AuthService } from '../services/auth.service';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
     <div class="container mt-5">
       <div class="row justify-content-center">
@@ -18,18 +18,17 @@ import { AuthService } from '../services/auth.service';
               <h3 class="text-center">Register</h3>
             </div>
             <div class="card-body">
-              <form #registerForm="ngForm" (ngSubmit)="onSubmit()">
+              <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                
                 <div class="mb-3">
                   <label class="form-label">Full Name</label>
                   <input
                     type="text"
                     class="form-control"
-                    name="fullName"
-                    [(ngModel)]="model.fullName"
-                    required
-                    #fullName="ngModel"
+                    formControlName="fullName"
+                    [class.is-invalid]="fullName?.invalid && fullName?.touched"
                   />
-                  <div *ngIf="fullName.invalid && fullName.touched" class="text-danger">
+                  <div *ngIf="fullName?.invalid && fullName?.touched" class="invalid-feedback">
                     Full name is required
                   </div>
                 </div>
@@ -39,14 +38,12 @@ import { AuthService } from '../services/auth.service';
                   <input
                     type="email"
                     class="form-control"
-                    name="email"
-                    [(ngModel)]="model.email"
-                    required
-                    email
-                    #email="ngModel"
+                    formControlName="email"
+                    [class.is-invalid]="email?.invalid && email?.touched"
                   />
-                  <div *ngIf="email.invalid && email.touched" class="text-danger">
-                    Valid email is required
+                  <div *ngIf="email?.invalid && email?.touched" class="invalid-feedback">
+                    <div *ngIf="email?.errors?.['required']">Email is required</div>
+                    <div *ngIf="email?.errors?.['email']">Valid email is required</div>
                   </div>
                 </div>
                 
@@ -55,14 +52,12 @@ import { AuthService } from '../services/auth.service';
                   <input
                     type="password"
                     class="form-control"
-                    name="password"
-                    [(ngModel)]="model.password"
-                    required
-                    minlength="6"
-                    #password="ngModel"
+                    formControlName="password"
+                    [class.is-invalid]="password?.invalid && password?.touched"
                   />
-                  <div *ngIf="password.invalid && password.touched" class="text-danger">
-                    Password must be at least 6 characters
+                  <div *ngIf="password?.invalid && password?.touched" class="invalid-feedback">
+                    <div *ngIf="password?.errors?.['required']">Password is required</div>
+                    <div *ngIf="password?.errors?.['minlength']">Minimum 6 characters</div>
                   </div>
                 </div>
                 
@@ -80,6 +75,7 @@ import { AuthService } from '../services/auth.service';
                     class="btn btn-primary"
                     [disabled]="registerForm.invalid || isLoading"
                   >
+                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
                     {{ isLoading ? 'Registering...' : 'Register' }}
                   </button>
                 </div>
@@ -99,25 +95,41 @@ export class RegisterComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   
-  model = {
-    fullName: '',
-    email: '',
-    password: ''
-  };
+  registerForm = new FormGroup({
+    fullName: new FormControl('', [Validators.required]),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required, Validators.minLength(6)])
+  });
   
   successMessage = '';
   errorMessage = '';
   isLoading = false;
 
+  get fullName() { return this.registerForm.get('fullName'); }
+  get email() { return this.registerForm.get('email'); }
+  get password() { return this.registerForm.get('password'); }
+
   onSubmit() {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+    
     this.isLoading = true;
     this.successMessage = '';
     this.errorMessage = '';
     
-    this.authService.register(this.model).subscribe({
-      next: () => {
+    const userData = {
+      fullName: this.registerForm.value.fullName || '',
+      email: this.registerForm.value.email || '',
+      password: this.registerForm.value.password || ''
+    };
+    
+    this.authService.register(userData).subscribe({
+      next: (response: any) => {
         this.isLoading = false;
-        this.successMessage = 'Registration successful! Redirecting to login...';
+        this.successMessage = `${response.email} registered successfully! Redirecting to login...`;
+        this.registerForm.reset();
         setTimeout(() => this.router.navigate(['/login']), 2000);
       },
       error: (error: HttpErrorResponse) => {

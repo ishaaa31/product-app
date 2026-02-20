@@ -185,7 +185,7 @@ export class ProductFormComponent implements OnInit {
     productCategory: '',
     productDescription: '',
     isExpire: false,
-    dateTime: new Date().toISOString().slice(0, 16),
+    dateTime: new Date().toISOString().slice(0, 16) || null,
     manufacturer: '',
     weight: '',
     warrantyInMonths: 0
@@ -221,7 +221,7 @@ export class ProductFormComponent implements OnInit {
           productCategory: data.productCategory,
           productDescription: data.productDescription,
           isExpire: data.isExpire,
-          dateTime: data.dateTime ? data.dateTime.slice(0, 16) : new Date().toISOString().slice(0, 16),
+          dateTime: data.dateTime ? data.dateTime.slice(0, 16) : new Date().toISOString().slice(0, 16) || null,
           manufacturer: data.manufacturer,
           weight: data.weight,
           warrantyInMonths: data.warrantyInMonths
