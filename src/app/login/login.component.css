@@ -1,0 +1,24 @@
+
+      .divider hr {
+        border-top: 1px solid #e0e0e0;
+        margin: 0;
+      }
+      .btn-outline-dark {
+        background-color: #ffffff;
+        border: 1px solid #dadce0;
+        color: #3c4043;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
+      .btn-outline-dark:hover {
+        background-color: #f8f9fa;
+        border-color: #d2e3fc;
+      }
+      .btn-outline-dark:active {
+        background-color: #e8f0fe;
+      }
+      .btn-outline-dark:disabled {
+        background-color: #f1f3f4;
+        border-color: #f1f3f4;
+        color: #9aa0a6;
+      }

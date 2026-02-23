@@ -1,0 +1,79 @@
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="text-center">Register</h3>
+            </div>
+            <div class="card-body">
+              <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                
+                <div class="mb-3">
+                  <label class="form-label">Full Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="fullName"
+                    [class.is-invalid]="fullName?.invalid && fullName?.touched"
+                  />
+                  <div *ngIf="fullName?.invalid && fullName?.touched" class="invalid-feedback">
+                    Full name is required
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    formControlName="email"
+                    [class.is-invalid]="email?.invalid && email?.touched"
+                  />
+                  <div *ngIf="email?.invalid && email?.touched" class="invalid-feedback">
+                    <div *ngIf="email?.errors?.['required']">Email is required</div>
+                    <div *ngIf="email?.errors?.['email']">Valid email is required</div>
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Password</label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    formControlName="password"
+                    [class.is-invalid]="password?.invalid && password?.touched"
+                  />
+                  <div *ngIf="password?.invalid && password?.touched" class="invalid-feedback">
+                    <div *ngIf="password?.errors?.['required']">Password is required</div>
+                    <div *ngIf="password?.errors?.['minlength']">Minimum 6 characters</div>
+                  </div>
+                </div>
+                
+                <div *ngIf="successMessage" class="alert alert-success">
+                  {{ successMessage }}
+                </div>
+                
+                <div *ngIf="errorMessage" class="alert alert-danger">
+                  {{ errorMessage }}
+                </div>
+                
+                <div class="d-grid">
+                  <button
+                    type="submit"
+                    class="btn btn-primary"
+                    [disabled]="registerForm.invalid || isLoading"
+                  >
+                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                    {{ isLoading ? 'Registering...' : 'Register' }}
+                  </button>
+                </div>
+              </form>
+              
+              <div class="text-center mt-3">
+                <p>Already have an account? <a routerLink="/login">Login</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

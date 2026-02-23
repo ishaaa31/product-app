@@ -7,49 +7,7 @@ import { AuthService } from '../services/auth.service';
   selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
-  template: `
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <a class="navbar-brand" routerLink="/">ProductApp</a>
-        
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item" *ngIf="isLoggedIn$ | async">
-              <a class="nav-link" routerLink="/products" routerLinkActive="active">Products</a>
-            </li>
-          </ul>
-          
-          <ul class="navbar-nav">
-            <ng-container *ngIf="isLoggedIn$ | async; else loggedOut">
-              <li class="nav-item">
-                <span class="nav-link text-light">
-                  Welcome, {{ currentUser?.fullName }}
-                </span>
-              </li>
-              <li class="nav-item">
-                <button class="btn btn-outline-light btn-sm" (click)="logout()">
-                  Logout
-                </button>
-              </li>
-            </ng-container>
-            
-            <ng-template #loggedOut>
-              <li class="nav-item">
-                <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" routerLink="/register" routerLinkActive="active">Register</a>
-              </li>
-            </ng-template>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  `
+  template: ``
 })
 export class NavbarComponent implements OnInit {
   private authService = inject(AuthService);

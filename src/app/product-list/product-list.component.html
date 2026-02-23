@@ -1,143 +1,55 @@
-<div class="container mt-4">
-  <h2 class="text-center mb-4">
-    {{ isEditMode ? 'Update Product' : 'Add Product' }}
-  </h2>
-
-  <form #productForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
-
-    <div class="mb-3">
-      <label class="form-label">Product Name</label>
-      <input
-        type="text"
-        class="form-control"
-        name="productName"
-        [(ngModel)]="product.productName"
-        required
-      />
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Product Price</label>
-      <input
-        type="number"
-        class="form-control"
-        name="productPrice"
-        [(ngModel)]="product.productPrice"
-      />
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Product Description</label>
-      <textarea
-        class="form-control"
-        name="productDescription"
-        [(ngModel)]="product.productDescription"
-        rows="3"
-      ></textarea>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Product Category</label>
-      <input
-        type="text"
-        class="form-control"
-        name="productCategory"
-        [(ngModel)]="product.productCategory"
-      />
-    </div>
-
-    <div class="form-check mb-3">
-      <input
-        type="checkbox"
-        class="form-check-input"
-        name="isExpire"
-        [(ngModel)]="product.isExpire"
-      />
-      <label class="form-check-label">Is Expired</label>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Date</label>
-      <input
-        type="datetime-local"
-        class="form-control"
-        name="dateTime"
-        [(ngModel)]="product.dateTime"
-      />
-    </div>
-
-    <div class="text-center">
-      <button
-        type="submit"
-        class="btn btn-primary me-2"
-        [disabled]="productForm.invalid"
-      >
-        {{ isEditMode ? 'Update' : 'Submit' }}
-      </button>
-
-      <button
-        type="button"
-        class="btn btn-secondary"
-        *ngIf="isEditMode"
-        (click)="resetForm()"
-      >
-        Cancel
-      </button>
-    </div>
-
-  </form>
-</div>
-
-<hr class="my-4" />
-
-<h3 class="text-center mb-3">Product List</h3>
-
-<table class="table table-bordered table-striped"
-       *ngIf="productList && productList.length > 0">
-
-  <thead class="table-dark">
-    <tr>
-      <th>Id</th>
-      <th>Name</th>
-      <th>Price</th>
-      <th>Description</th>
-      <th>Category</th>
-      <th>Expired</th>
-      <th>Date</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr *ngFor="let item of productList">
-      <td>{{ item.productId }}</td>
-      <td>{{ item.productName }}</td>
-      <td>{{ item.productPrice }}</td>
-      <td>{{ item.productDescription }}</td>
-      <td>{{ item.productCategory }}</td>
-      <td>
-        <span [class.text-danger]="item.isExpire"
-              [class.text-success]="!item.isExpire">
-          {{ item.isExpire ? 'Yes' : 'No' }}
-        </span>
-      </td>
-      <td>{{ item.dateTime | date:'short' }}</td>
-      <td>
-        <button class="btn btn-sm btn-warning me-2"
-                (click)="setEdit(item)">
-          Edit
+    <div class="container mt-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Product List</h2>
+        <button class="btn btn-primary" (click)="addNewProduct()">
+          Add New Product
         </button>
+      </div>
 
-        <button class="btn btn-sm btn-danger"
-                (click)="deleteProduct(item.productId)">
-          Delete
-        </button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+      <div *ngIf="loading" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
 
-<div *ngIf="productList && productList.length === 0"
-     class="text-center text-muted">
-  No products available
-</div>
+      <div *ngIf="!loading && products.length === 0" class="alert alert-info">
+        No products available. Click "Add New Product" to create one.
+      </div>
+
+      <table class="table table-bordered table-striped" *ngIf="!loading && products.length > 0">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th>Has Details</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of products">
+            <td>{{ product.productId }}</td>
+            <td>{{ product.productName }}</td>
+            <td>{{ product.productPrice | currency:'INR':'symbol':'1.0-0' }}</td>
+            <td>{{ product.productCategory }}</td>
+            <td>
+              <span class="badge" [class.bg-success]="product.hasDetails" [class.bg-secondary]="!product.hasDetails">
+                {{ product.hasDetails ? 'Yes' : 'No' }}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-info me-2" (click)="viewDetails(product.productId)">
+                View
+              </button>
+              <button class="btn btn-sm btn-warning me-2" (click)="editProduct(product.productId)">
+                Edit
+              </button>
+              <button class="btn btn-sm btn-danger" (click)="deleteProduct(product.productId)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
